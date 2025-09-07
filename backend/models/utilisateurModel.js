@@ -3,21 +3,18 @@ const bcrypt = require('bcrypt')
 
 
 const utilisateurSchema = new mongoose.Schema({
-    nom: {
+    nomComplet: {
         type: String,
         required: true,
         trim: true,
         maxlength: 30
     },
-    prenom: {
+    photo: {
         type: String,
-        required: true,
-        trim: true,
-        maxlength: 55
     },
     genre: {
         type: String,
-        required: true,
+        // required: true,
         enum: ['Homme', 'Femme']
     },
     email: {
@@ -32,14 +29,14 @@ const utilisateurSchema = new mongoose.Schema({
     telephone: {
         type: String,
         unique: true,
-        required: true,
+        // required: true,
         trim: true,
         maxlength: 30
     },
     role: {
         type: String,
-        required: true,
-        enum: ['admin', 'utilisateur', 'visiteur']
+        // required: true,
+        enum: ['superAdmin','admin', 'employe', 'visiteur']
     },
     motDePasse:{
         type:String,

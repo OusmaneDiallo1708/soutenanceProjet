@@ -16,7 +16,7 @@ const Log = () => {
                 rounded-lg px-3 py-2 ${mode ==='register'? "bg-blue-950 text-white font-semibold border-r-8 border-green-800":"bg-gray-500 rounded-md text-blue-950 font-semibold"}`}>S'Inscrire</button>
         </div>
         {mode === 'login' && (<SignInForm/>)}
-        {mode === 'register' && (<SignUpForm/>)}
+        {mode === 'register' && (<SignUpForm setIsLogin={() => setMode("login")}/>)}
     </div>
   )
 }

@@ -41,6 +41,7 @@ module.exports.addVente = async (req, res) => {
         const nouvelleVente = new venteModel({
             produit: produitId,
             produitNom: produit.categorieNom, // nécessite que ton modèle produit ait "nom"
+            produitDescription: produit.categorieDescription, // nécessite que ton modèle produit ait "description"
             utilisateur: utilisateurId,
             utilisateurNom: utilisateur.nom, // nécessite que ton modèle utilisateur ait "nom"
             quantite: Number(quantite),

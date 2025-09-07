@@ -4,19 +4,41 @@ const bcrypt = require('bcrypt');
 const ObjectID = require('mongoose').Types.ObjectId
 
 module.exports.ajoutUtilisateur = async (req, res) => {
-    const { nom, prenom, genre, email, telephone, role, motDePasse } = req.body;
-
+    const { nomComplet, email, motDePasse } = req.body;
+  
     try {
-        const utilisateur = await utilisateurModel.create({
-            nom,prenom,genre,email,telephone,role,motDePasse});
-
-        res.status(200).json({message:`${prenom} à été ajouter avec succès`,utilisateur});
-
+      // Vérifier si tous les champs obligatoires sont remplis
+      if (!nomComplet || !email || !motDePasse) {
+        return res.status(400).json({ message: "Tous les champs sont obligatoires" });
+      }
+  
+      // Vérifier le format de l'email avec regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Email invalide" });
+      }
+  
+      // Vérifier si l'email existe déjà
+      const exist = await utilisateurModel.findOne({ email });
+      if (exist) {
+        return res.status(400).json({ message: "Cet email est déjà utilisé" });
+      }
+  
+      // Création de l’utilisateur
+      const utilisateur = await utilisateurModel.create({
+        nomComplet,
+        email,
+        motDePasse,
+      });
+  
+      res
+        .status(201)
+        .json({ message: `${email} a été ajouté avec succès`, utilisateur });
     } catch (error) {
-        console.error("Erreur lors de l'ajout :", error.message);
-        res.status(500).json({ message: 'Erreur serveur' });
+      console.error("Erreur lors de l'ajout :", error.message);
+      res.status(500).json({ message: "Erreur serveur", error: error.message });
     }
-};
+  };  
 module.exports.afficherTousLesUtilisateurs = async (req,res)=>{
     try {
         const utilisateur = await utilisateurModel.find().select('-motDePasse')
@@ -43,6 +65,11 @@ module.exports.afficherUnUtilisateur = async (req,res)=>{
 
 module.exports.modifierUnUtilisateur = async (req, res) => {
     const utilisateurId = req.params.id;
+    // 🔹 Gestion de l'image (si tu utilises multer)
+    let photoPath = null;
+    if (req.file) {
+    photoPath = `/uploads/${req.file.filename}`;
+    }
     // Vérification si l'ID est valide
     if (!ObjectID.isValid(utilisateurId)) {
         return res.status(400).json({ message: 'Identifiant invalide' });
@@ -57,8 +84,8 @@ module.exports.modifierUnUtilisateur = async (req, res) => {
             utilisateurId,
             {
                 $set: {
-                    nom: req.body.nom,
-                    prenom: req.body.prenom,
+                    nomComplet: req.body.nomComplet,
+                    photo:photoPath,
                     genre: req.body.genre,
                     telephone: req.body.telephone,
                     role: req.body.role,
@@ -71,7 +98,7 @@ module.exports.modifierUnUtilisateur = async (req, res) => {
             return res.status(404).json({ message: 'Utilisateur introuvable' });
         }
         res.status(200).json({
-            message: `${utilisateur.prenom} a été modifié avec succès`,
+            message: `${utilisateur.nomComplet} a été modifié avec succès`,
             utilisateur
         });
     } catch (error) {

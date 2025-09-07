@@ -35,8 +35,21 @@ module.exports.Connexion = async (req, res) => {
     res.status(500).json({ message: 'Erreur de connexion', error: error.message });
   }
 };
+module.exports.GetInfo =  (req,res) => {
+  {
+      if (res.locals.user) {
+        res.json({
+          prenom: res.locals.user.prenom, // assure-toi que ton modèle contient "prenom"
+          photo: res.locals.user.photo,   // idem pour "photo"
+        });
+      } else {
+        res.status(401).json({ message: "Utilisateur non connecté" });
+      }
+  }
+}
 
 module.exports.Logout = (req, res) => {
     res.cookie('jwt', '', { maxAge: 1 }); // supprime le cookie
     res.status(200).json({ message: 'Déconnexion réussie' });
   };
+
