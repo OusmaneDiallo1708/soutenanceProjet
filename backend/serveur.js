@@ -10,6 +10,7 @@ const ConnexionDB = require("./config/db");
 const utilisateurRoute = require("./routes/utilisateurRoute");
 const allRoute = require("./routes/allRoute");
 const cookieParser = require("cookie-parser");
+// const { checkUser, requireAuth } = require("./middlewares/authmiddlewear");
 const { checkUser, requireAuth } = require("./middlewares/authmiddlewear");
 const cors = require("cors");
 
@@ -30,12 +31,22 @@ app.use(cookieParser());
 // =======================
 // 📌 Configuration CORS
 // =======================
+// const corsOptions = {
+//   origin: "http://localhost:5173", // Frontend React
+//   credentials: true,
+//   // allowedHeaders: ["sessionId", "Content-Type"],
+//   exposedHeaders: ["sessionId"],
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+//   credentials: true,
+//   preflightContinue: false,
+// };
 const corsOptions = {
-  origin: "http://localhost:5173", // Frontend React
+  origin: "http://localhost:5173", // ✅ Frontend React
   credentials: true,
-  allowedHeaders: ["sessionId", "Content-Type"],
   exposedHeaders: ["sessionId"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   preflightContinue: false,
 };
 app.use(cors(corsOptions));
@@ -44,7 +55,7 @@ app.use(cors(corsOptions));
 // 📌 Vérification JWT
 // =======================
 app.use(checkUser);
-
+// app.use('*', (req, res, next) => checkUser(req, res, next));
 // =======================
 // 📌 Connexion MongoDB
 // =======================
@@ -61,7 +72,7 @@ app.get("/jwtid", requireAuth, (req, res) => {
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/utilisateur", utilisateurRoute);
-app.use("/api/allroute", allRoute);
+app.use("/api/allRoute", allRoute);
 
 // =======================
 // 📌 Démarrage Serveur
@@ -69,3 +80,4 @@ app.use("/api/allroute", allRoute);
 app.listen(process.env.PORT, () => {
     console.log(`✅Le serveur a démarré sur le port ${process.env.PORT}`)
 })
+

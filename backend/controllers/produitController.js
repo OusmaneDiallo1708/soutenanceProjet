@@ -6,68 +6,6 @@ const path = require("path");
 const fs = require("fs");
 
 // module.exports.addProduits = async (req, res) => {
-//     try {
-//       let { categorieId, categories, quantite, prixAchat, prixVente, 
-//           stock_min, date_ajout, date_expiration } = req.body;
-  
-//       // Si on reçoit un objet catégorie complet, extraire l'ID
-//       if (!categorieId && categories && categories._id) {
-//         categorieId = categories._id;
-//       }
-  
-//       // Vérifier l'ID
-//       if (!ObjectID.isValid(categorieId)) {
-//         return res.status(400).json({ message: "ID de catégorie invalide" });
-//       }
-  
-//       // Vérifie si la catégorie existe
-//       const categorieExistante = await categorieModel.findById(categorieId);
-//       if (!categorieExistante) {
-//         return res.status(404).json({ message: "Catégorie introuvable" });
-//       }
-  
-//       // Convertir quantite en nombre
-//       quantite = Number(quantite);
-  
-//       // Chercher si un produit avec le même nom et description existe déjà
-//       let produitExistant = await produitModel.findOne({ 
-//         categorieNom: categorieExistante.categorieNom,
-//         categorieDescription: categorieExistante.categorieDescription
-//       });
-  
-//       if (produitExistant) {
-//         // Mise à jour de la quantité et du stock
-//         produitExistant.quantite += quantite;
-//         produitExistant.stock = produitExistant.quantite;
-//         await produitExistant.save();
-//         return res.status(200).json({ message: "Quantité mise à jour", produit: produitExistant });
-//       }
-  
-//       // Sinon, créer un nouveau produit
-//       const nouveauProduit = new produitModel({
-//         categorie: categorieId,
-//         categorieNom: categorieExistante.categorieNom,
-//         categorieDescription: categorieExistante.categorieDescription,
-//         quantite,
-//         stock: quantite,
-//         prixAchat,
-//         prixVente,
-//         stock_min,
-//         date_ajout,
-//         date_expiration
-//       });
-  
-//       await nouveauProduit.save();
-//       return res.status(201).json({ message: "Produit ajouté", produit: nouveauProduit });
-  
-//     } catch (error) {
-//       res.status(500).json({ message: error.message });
-//     }
-//   };
-
-
-// Ajouter un produit
-// module.exports.addProduits = async (req, res) => {
 //   try {
 //     let {
 //       categorieId,
@@ -96,30 +34,40 @@ const fs = require("fs");
 //     prixVente = Number(prixVente);
 //     stock_min = Number(stock_min);
 
-//     // Vérifier les valeurs obligatoires
 //     if (!quantite || !prixAchat || !prixVente) {
 //       return res
 //         .status(400)
 //         .json({ message: "❌ Données manquantes ou invalides" });
 //     }
 
-//     // 🔹 Gestion de l’image
+//     // 🔹 Gestion de l'image (si tu utilises multer)
+//     let imagePath = null;
+//     if (req.file) {
+//       imagePath = `/uploads/${req.file.filename}`;
+//     }
+
+//     // 🔹 Vérifier si le produit existe déjà pour cette catégorie
+//     let produitExistant = await produitModel.findOne({
+//       categorie: categorieId,
+//     });
+
 //     if (produitExistant) {
+//       // Ajouter la quantité si le produit existe
 //       produitExistant.quantite += quantite;
 //       produitExistant.stock = produitExistant.quantite;
-//       if (imagePath) produitExistant.image = imagePath; // maj image si fournie
+//       if (imagePath) produitExistant.image = imagePath;
 //       await produitExistant.save();
+
 //       return res.status(200).json({
 //         message: "✅ Quantité mise à jour",
 //         produit: produitExistant,
 //       });
 //     }
-    
 
-//     // Créer un nouveau produit
+//     // Sinon créer un nouveau produit
 //     const nouveauProduit = new produitModel({
 //       categorie: categorieId,
-//       categorieNom: categorieExistante.nom, // ⚠️ assure-toi que ça existe dans ta BDD
+//       categorieNom: categorieExistante.nom,
 //       categorieDescription: categorieExistante.description,
 //       quantite,
 //       stock: quantite,
@@ -128,80 +76,69 @@ const fs = require("fs");
 //       stock_min,
 //       date_ajout,
 //       date_expiration,
-//       image: imagePath, // ajout image
+//       image: imagePath,
 //     });
 
 //     await nouveauProduit.save();
+
 //     return res.status(201).json({
 //       message: "✅ Produit ajouté avec succès",
 //       produit: nouveauProduit,
 //     });
 //   } catch (error) {
 //     console.error("Erreur serveur:", error);
-//     res.status(500).json({ message: "⚠️ Erreur interne: " + error.message });
+//     return res.status(500).json({ message: "⚠️ Erreur interne: " + error.message });
 //   }
 // };
 
 module.exports.addProduits = async (req, res) => {
   try {
-    let {
-      categorieId,
-      quantite,
-      prixAchat,
-      prixVente,
-      stock_min,
-      date_ajout,
-      date_expiration,
-    } = req.body;
-
-    // Vérifier l’ID catégorie
-    if (!mongoose.Types.ObjectId.isValid(categorieId)) {
-      return res.status(400).json({ message: "❌ ID de catégorie invalide" });
+    console.log("🔍 Cookies reçus:", req.cookies);
+    console.log("🔍 Utilisateur from res.locals:", res.locals.user);
+    
+    const user = res.locals.user;
+    if (!user) {
+      console.log("❌ Aucun utilisateur dans res.locals");
+      return res.status(401).json({ message: "Connectez-vous pour ajouter un produit" });
     }
 
-    // Vérifier si la catégorie existe
+    let { categorieId, quantite, prixAchat, prixVente, stock_min, date_ajout, date_expiration } = req.body;
+
+    // Validation des données
+    if (!categorieId) {
+      return res.status(400).json({ message: "L'ID de catégorie est requis" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(categorieId)) {
+      return res.status(400).json({ message: "ID de catégorie invalide" });
+    }
+
     const categorieExistante = await categorieModel.findById(categorieId);
     if (!categorieExistante) {
-      return res.status(404).json({ message: "❌ Catégorie introuvable" });
+      return res.status(404).json({ message: "Catégorie introuvable" });
     }
 
-    // Forcer le cast des nombres
+    // Conversion des nombres
     quantite = Number(quantite);
     prixAchat = Number(prixAchat);
     prixVente = Number(prixVente);
     stock_min = Number(stock_min);
 
-    if (!quantite || !prixAchat || !prixVente) {
-      return res
-        .status(400)
-        .json({ message: "❌ Données manquantes ou invalides" });
+    if (isNaN(quantite) || isNaN(prixAchat) || isNaN(prixVente)) {
+      return res.status(400).json({ message: "Données numériques invalides" });
     }
 
-    // 🔹 Gestion de l'image (si tu utilises multer)
+    if (quantite <= 0 || prixAchat <= 0 || prixVente <= 0) {
+      return res.status(400).json({ message: "Les valeurs doivent être positives" });
+    }
+
+    // Gestion de l'image
     let imagePath = null;
     if (req.file) {
       imagePath = `/uploads/${req.file.filename}`;
     }
 
-    // 🔹 Vérifier si le produit existe déjà pour cette catégorie
-    let produitExistant = await produitModel.findOne({
-      categorie: categorieId,
-    });
-
-    if (produitExistant) {
-      // Ajouter la quantité si le produit existe
-      produitExistant.quantite += quantite;
-      produitExistant.stock = produitExistant.quantite;
-      if (imagePath) produitExistant.image = imagePath;
-      await produitExistant.save();
-
-      return res.status(200).json({
-        message: "✅ Quantité mise à jour",
-        produit: produitExistant,
-      });
-    }
-
-    // Sinon créer un nouveau produit
+    // Création du produit
     const nouveauProduit = new produitModel({
       categorie: categorieId,
       categorieNom: categorieExistante.nom,
@@ -210,21 +147,24 @@ module.exports.addProduits = async (req, res) => {
       stock: quantite,
       prixAchat,
       prixVente,
-      stock_min,
-      date_ajout,
-      date_expiration,
+      stock_min: stock_min || 5,
+      date_ajout: date_ajout || new Date(),
+      date_expiration: date_expiration || null,
       image: imagePath,
+      utilisateur: user._id,
     });
 
     await nouveauProduit.save();
 
-    return res.status(201).json({
-      message: "✅ Produit ajouté avec succès",
+    console.log("✅ Produit ajouté par utilisateur:", user._id);
+
+    res.status(201).json({
+      message: "Produit ajouté avec succès",
       produit: nouveauProduit,
     });
   } catch (error) {
-    console.error("Erreur serveur:", error);
-    return res.status(500).json({ message: "⚠️ Erreur interne: " + error.message });
+    console.error("❌ Erreur serveur:", error);
+    res.status(500).json({ message: "Erreur interne: " + error.message });
   }
 };
 
@@ -238,6 +178,43 @@ module.exports.getAllProduits = async (req,res)=>{
         res.status(400).json({message:'Erreur lors de la recuperation',error:error.message})
     }
 }
+
+// module.exports.getAllProduitsAvecUtilisateur = async (req, res) => {
+//   try {
+//     const produits = await produitModel.find()
+//       .populate({
+//         path: 'utilisateur', // champ utilisateur
+//         select: 'nomComplet email' // ce que tu veux afficher
+//       })
+//       .populate({
+//         path: 'categorie', // optionnel : pour voir la catégorie complète
+//         select: 'nom description'
+//       })
+//       .sort({ date_ajout: -1 }); // dernier produit ajouté en premier
+
+//     res.status(200).json({
+//       message: "Liste des produits avec utilisateurs",
+//       produits
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Erreur serveur", error: error.message });
+//   }
+// };
+
+module.exports.getAllProduitsAvecUtilisateur = async (req, res) => {
+  try {
+    const produits = await produitModel.find()
+      .populate({ path: 'utilisateur', select: 'nomComplet email' })
+      // .populate({ path: 'categorie', select: 'nom description' })
+      .sort({ date_ajout: -1 });
+
+    res.status(200).json({ message: "Liste des produits avec utilisateurs", produits });
+  } catch (error) {
+    console.error("Erreur getAllProduitsAvecUtilisateur :", error); // ✅
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+
 
 module.exports.getUnProduits = async (req,res)=>{
     const produitId = req.params.id
@@ -256,99 +233,104 @@ module.exports.getUnProduits = async (req,res)=>{
   }
 
 // module.exports.updateProduits = async (req, res) => {
-//     const produitId = req.params.id;
+//   const produitId = req.params.id;
 
-//     if (!ObjectID.isValid(produitId)) {
-//         return res.status(400).send('ID invalide');
+//   if (!ObjectID.isValid(produitId)) {
+//     return res.status(400).send("ID invalide");
+//   }
+
+//   try {
+//     const { quantite, prixAchat, prixVente, stock_min, date_ajout, date_expiration } = req.body;
+
+//     // Trouver le produit et mettre à jour
+//     const produit = await produitModel.findOneAndUpdate(
+//       { _id: produitId },
+//       {
+//         $set: {
+//           quantite: Number(quantite),
+//           stock: Number(quantite), // mise à jour du stock automatiquement
+//           prixAchat: Number(prixAchat),
+//           prixVente: Number(prixVente),
+//           stock_min: Number(stock_min),
+//           date_ajout: date_ajout,
+//           date_expiration: date_expiration,
+//         }
+//       },
+//       { new: true, runValidators: true }
+//     );
+
+//     if (!produit) {
+//       return res.status(404).json({ message: "Identifiant introuvable" });
 //     }
 
-//     try {
-//         const produit = await produitModel.findOneAndUpdate(
-//             { _id: produitId },
-//             {
-//                 $set: {
-//                     quantite: req.body.quantite,
-//                     stock: req.body.quantite, // mettre à jour automatiquement le stock
-//                     prixAchat: req.body.prixAchat,
-//                     prixVente: req.body.prixVente,
-//                     stock_min: req.body.stock_min,
-//                     date_ajout: req.body.date_ajout,
-//                     date_expiration: req.body.date_expiration
-//                 }
-//             },
-//             { new: true, runValidators: true }
-//         );
+//     // Vérifier alerte stock
+//     const alert = produit.stock < produit.stock_min;
 
-//         if (!produit) {
-//             return res.status(404).json({ message: 'Identifiant introuvable' });
-//         }
-
-//         // Vérifier si le stock est inférieur au minimum pour alerte
-//         let alert = false;
-//         if (produit.sctock < produit.stock_min) {
-//             alert = true;
-//         }
-
-//         res.status(200).json({
-//             message: 'Produit modifié avec succès',
-//             produit: produit,
-//             alert_stock: alert
-//         });
-
-//     } catch (error) {
-//         res.status(400).json({ message: 'Erreur lors de la modification', error: error.message });
+//     // Mettre à jour le champ alert_stock dans la BDD
+//     if (alert !== produit.alert_stock) {
+//       produit.alert_stock = alert;
+//       await produit.save();
 //     }
+
+//     res.status(200).json({
+//       message: "Produit modifié avec succès",
+//       produit,
+//       alert_stock: alert
+//     });
+//   } catch (error) {
+//     res.status(400).json({ message: "Erreur lors de la modification", error: error.message });
+//   }
 // };
 
 module.exports.updateProduits = async (req, res) => {
-  const produitId = req.params.id;
-
-  if (!ObjectID.isValid(produitId)) {
-    return res.status(400).send("ID invalide");
-  }
-
   try {
-    const { quantite, prixAchat, prixVente, stock_min, date_ajout, date_expiration } = req.body;
-
-    // Trouver le produit et mettre à jour
-    const produit = await produitModel.findOneAndUpdate(
-      { _id: produitId },
-      {
-        $set: {
-          quantite: Number(quantite),
-          stock: Number(quantite), // mise à jour du stock automatiquement
-          prixAchat: Number(prixAchat),
-          prixVente: Number(prixVente),
-          stock_min: Number(stock_min),
-          date_ajout: date_ajout,
-          date_expiration: date_expiration,
-        }
-      },
-      { new: true, runValidators: true }
-    );
-
-    if (!produit) {
-      return res.status(404).json({ message: "Identifiant introuvable" });
+    const user = res.locals.user;
+    if (!user) {
+      return res.status(401).json({ message: "Connectez-vous pour modifier un produit" });
     }
+
+    const produitId = req.params.id;
+    if (!ObjectID.isValid(produitId)) {
+      return res.status(400).json({ message: "ID invalide" });
+    }
+
+    const produit = await produitModel.findById(produitId);
+    if (!produit) {
+      return res.status(404).json({ message: "Produit introuvable" });
+    }
+
+    // ✅ Vérifier que le produit appartient à l'utilisateur
+    if (produit.utilisateur.toString() !== user._id.toString()) {
+      return res.status(403).json({ message: "Vous ne pouvez modifier que vos produits" });
+    }
+
+    const { quantite, prixAchat, prixVente, stock_min, date_ajout, date_expiration } = req.body;
+    const updateData = {
+      quantite: Number(quantite),
+      stock: Number(quantite),
+      prixAchat: Number(prixAchat),
+      prixVente: Number(prixVente),
+      stock_min: Number(stock_min),
+      date_ajout,
+      date_expiration,
+    };
+
+    if (req.file) {
+      updateData.image = `/uploads/${req.file.filename}`;
+    }
+
+    const produitModifie = await produitModel.findByIdAndUpdate(produitId, updateData, { new: true, runValidators: true });
 
     // Vérifier alerte stock
-    const alert = produit.stock < produit.stock_min;
+    produitModifie.alert_stock = produitModifie.stock < produitModifie.stock_min;
+    await produitModifie.save();
 
-    // Mettre à jour le champ alert_stock dans la BDD
-    if (alert !== produit.alert_stock) {
-      produit.alert_stock = alert;
-      await produit.save();
-    }
-
-    res.status(200).json({
-      message: "Produit modifié avec succès",
-      produit,
-      alert_stock: alert
-    });
+    res.status(200).json({ message: "Produit modifié avec succès", produit: produitModifie });
   } catch (error) {
-    res.status(400).json({ message: "Erreur lors de la modification", error: error.message });
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
+
 
 module.exports.deleteProduits = async (req,res)=>{
     const produitId = req.params.id
@@ -484,6 +466,8 @@ module.exports.deleteProduits = async (req,res)=>{
 //   }
 // };
 // / Statistiques produits
+
+
 module.exports.getStatsProduits = async (req, res) => {
   try {
     const totalProduits = await produitModel.countDocuments();

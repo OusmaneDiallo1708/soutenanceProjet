@@ -64,20 +64,48 @@ module.exports.updateCategories = async (req,res)=>{
     }
 }
 
-module.exports.deleteCategories = async (req,res)=>{
-    const categorieId = req.params.id
-    if (!ObjectID) {
-        return res.status(400).send("ID invalide");
+// module.exports.deleteCategories = async (req,res)=>{
+//     const categorieId = req.params.id
+//     if (!ObjectID) {
+//         return res.status(400).send("ID invalide");
+//     }
+//     try {
+//         const categorie = await categorieModel.findByIdAndDelete(categorieId)
+//         if (!categorieId) {
+//             return res.status(400).send("Identifiant intourvable")
+//         }
+//         if (!categorieId) return res.status(404).send("Identifiant introuvable");
+//         res.status(200).json({message:`${categorie.nom} à été supprimer avec succès`})
+//     } catch (error) {
+//         res.status(400).json({message:'Erreur lors de la suppression',error:error.message})
+//     }
+// }
+
+
+module.exports.deleteCategories = async (req, res) => {
+    const categorieId = req.params.id;
+  
+    // Vérifier si l'ID est valide
+    if (!ObjectID.isValid(categorieId)) {
+      return res.status(400).json({ message: "ID invalide" });
     }
+  
     try {
-        const categorie = await categorieModel.findByIdAndDelete(categorieId)
-        if (!categorieId) {
-            return res.status(400).send("Identifiant intourvable")
-        }
-        if (!categorieId) return res.status(404).send("Identifiant introuvable");
-        res.status(200).json({message:`${categorie.nom} à été supprimer avec succès`})
+      const categorie = await categorieModel.findByIdAndDelete(categorieId);
+  
+      if (!categorie) {
+        return res.status(404).json({ message: "Catégorie introuvable" });
+      }
+  
+      res.status(200).json({
+        message: `${categorie.nom} a été supprimée avec succès`,
+        categorie: categorie
+      });
     } catch (error) {
-        res.status(400).json({message:'Erreur lors de la suppression',error:error.message})
+      res.status(500).json({
+        message: "Erreur lors de la suppression",
+        error: error.message
+      });
     }
-}
+  };
   

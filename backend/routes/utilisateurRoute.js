@@ -7,14 +7,14 @@ const authController = require('../controllers/authController')
 const { requireAuth } = require('../middlewares/requireAuth') // ⬅️ attention à la destructuration
 
 
-router.post('/ajoutUtilisateur',utilisateurController.ajoutUtilisateur)
-// router.post('/ajoutUtilisateur',uploadUser.single("image"),utilisateurController.ajoutUtilisateur)
+// router.post('/ajoutUtilisateur',utilisateurController.ajoutUtilisateur)
+router.post('/ajoutUtilisateur',uploadUser.single("image"),utilisateurController.ajoutUtilisateur)
 router.post('/connexion',authController.Connexion)
-router.get('/recuperation',authController.GetInfo)
+router.get('/profil',authController.GetInfo)
 router.get('/logout', requireAuth, authController.Logout);
 // router.get('/getAllUtilisateurs',utilisateurController.afficherTousLesUtilisateurs)
 router.get('/getAllUtilisateurs', utilisateurController.afficherTousLesUtilisateurs);
-router.get('/afficherUnUtilisateur/:id',utilisateurController.afficherUnUtilisateur)
+router.get('/getUnUtilisateur/:id',utilisateurController.afficherUnUtilisateur)
 router.put('/modifierUnUtilisateur/:id',utilisateurController.modifierUnUtilisateur)
 router.delete('/supprimerUnUtilisateur/:id',utilisateurController.supprimerUnUtilisateur)
 module.exports = router

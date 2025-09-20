@@ -36,7 +36,8 @@ const utilisateurSchema = new mongoose.Schema({
     role: {
         type: String,
         // required: true,
-        enum: ['superAdmin','admin', 'employe', 'visiteur']
+        enum: ['superAdmin','admin', 'employé', 'visiteur'],
+        default: 'visiteur' // ✅ une seule chaîne, pas un tableau
     },
     motDePasse:{
         type:String,
