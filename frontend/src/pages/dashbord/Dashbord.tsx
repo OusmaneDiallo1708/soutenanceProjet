@@ -136,8 +136,8 @@ const Dashboard = () => {
                 transition={{ duration: 0.5 }}
                 className="mb-8"
             >
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Tableau de Bord</h1>
-                <p className="text-gray-600">Gestion et suivi de votre inventaire</p>
+                {/* <h1 className="text-3xl font-bold text-gray-800 mb-2">Tableau de Bord</h1> */}
+                <h1 className="font-bold text-2xl text-blue-900 mb-2">Gestion et suivi de votre inventaire</h1>
             </motion.div>
 
             {/* Cartes de statistiques */}
@@ -242,7 +242,7 @@ const Dashboard = () => {
             )}
 
             {/* Quick Actions */}
-            <motion.div
+            {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -269,7 +269,7 @@ const Dashboard = () => {
                         </motion.button>
                     ))}
                 </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Tableau des produits */}
             <motion.div

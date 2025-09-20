@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CategorieAdd from "./CategorieAdd";
+import { BiAddToQueue } from "react-icons/bi";
 
 const BtnCategorie = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,10 +8,10 @@ const BtnCategorie = () => {
   return (
     <div>
       <button
-        className="block text-2xl text-white bg-blue-600 text-left px-6 py-2 rounded  hover:bg-gray-200 hover:text-black"
+        className="flex justify-center items-center gap-1 text-2xl text-white bg-blue-600 text-left px-6 py-2 rounded  hover:bg-gray-200 hover:text-black"
         onClick={() => setIsOpen(true)}
       >
-        ➕ Categories
+         <BiAddToQueue size={30}/>Categories
       </button>
 
       {/* Utilisation du même style de modal que dans CategorieListes */}

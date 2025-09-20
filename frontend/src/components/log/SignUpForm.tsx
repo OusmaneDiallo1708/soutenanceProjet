@@ -1,257 +1,78 @@
-// import axios from "axios";
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// const SignUpForm = () => {
-//   const navigate = useNavigate();
-
-//   const [nom, setNom] = useState<string>("");
-//   const [prenom, setPrenom] = useState<string>("");
-//   const [genre, setGenre] = useState<string>("");
-//   const [telephone, setTelephone] = useState<string>("");
-//   const [role, setRole] = useState<string>("");
-//   const [email, setEmail] = useState<string>("");
-//   const [motDePasse, setPasseWord] = useState<string>("");
-//   const [confirme, setConfirme] = useState<string>("");
-
-//   // erreurs
-//   const [nomErreur, setNomErreur] = useState<string>("");
-//   const [prenomErreur, setPrenomErreur] = useState<string>("");
-//   const [genreErreur, setGenreErreur] = useState<string>("");
-//   const [telephoneErreur, setTelephoneErreur] = useState<string>("");
-//   const [roleErreur, setRoleErreur] = useState<string>("");
-//   const [emailErreur, setEmailErreur] = useState<string>("");
-//   const [motDePasseErreur, setmotDePasseErreur] = useState<string>("");
-
-//   const handleResister = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     // reset erreurs
-//     setNomErreur("");
-//     setPrenomErreur("");
-//     setGenreErreur("");
-//     setTelephoneErreur("");
-//     setRoleErreur("");
-//     setEmailErreur("");
-//     setmotDePasseErreur("");
-
-//     let hasError = false;
-
-//     if (!nom) {
-//       setNomErreur("⚠️ Le nom est obligatoire");
-//       hasError = true;
-//     }
-//     if (!prenom) {
-//       setPrenomErreur("⚠️ Le prénom est obligatoire");
-//       hasError = true;
-//     }
-//     if (!genre) {
-//       setGenreErreur("⚠️ Veuillez choisir un genre");
-//       hasError = true;
-//     }
-//     if (!telephone) {
-//       setTelephoneErreur("⚠️ Le téléphone est obligatoire");
-//       hasError = true;
-//     }
-//     if (!role) {
-//       setRoleErreur("⚠️ Veuillez choisir un rôle");
-//       hasError = true;
-//     }
-//     if (!email) {
-//       setEmailErreur("⚠️ L'email est obligatoire");
-//       hasError = true;
-//     }
-//     if (!motDePasse) {
-//       setmotDePasseErreur("⚠️ Le mot de passe est obligatoire");
-//       hasError = true;
-//     } else if (motDePasse !== confirme) {
-//       setmotDePasseErreur("⚠️ Le mot de passe et la confirmation ne correspondent pas");
-//       hasError = true;
-//     }
-
-//     if (hasError) return;
-
-//     try {
-//       const res = await axios.post(
-//         `${import.meta.env.VITE_APP_URL}/api/user/register`,
-//         { nom, prenom, genre, telephone, role, email, motDePasse },
-//         { withCredentials: true }
-//       );
-//       console.log("Inscription réussie :", res.data);
-//       navigate("/"); // Redirection après succès
-//     } catch (error: any) {
-//       console.log("Erreur d'inscription :", error.response?.data || error.message);
-//     }
-//   };
-
-//   return (
-//     <div className="flex w-full flex-col">
-//       <form
-//         className="justify-center items-center text-center"
-//         id="SigninForm"
-//         onSubmit={handleResister}
-//       >
-//         <h1 className="text-blue-950 text-3xl font-bold border-green-800 border-b-4 mb-4">
-//           Se Connecter
-//         </h1>
-
-//         {/* Nom + Prénom */}
-//         <div className="flex gap-1 w-full">
-//           <div className="w-full">
-//             <input
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               type="text"
-//               value={nom}
-//               onChange={(e) => setNom(e.target.value)}
-//               placeholder="Nom"
-//             />
-//             {nomErreur && <span className="text-red-500 text-sm">{nomErreur}</span>}
-//           </div>
-//           <div className="w-full">
-//             <input
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               type="text"
-//               value={prenom}
-//               onChange={(e) => setPrenom(e.target.value)}
-//               placeholder="Prenom"
-//             />
-//             {prenomErreur && <span className="text-red-500 text-sm">{prenomErreur}</span>}
-//           </div>
-//         </div>
-
-//         {/* Genre + Email */}
-//         <div className="flex gap-1 w-full">
-//           <div className="w-full">
-//             <select
-//               onChange={(e) => setGenre(e.target.value)}
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               value={genre}
-//             >
-//               <option value="">------Choisissez un genre---</option>
-//               <option value="Homme">Homme</option>
-//               <option value="Femme">Femme</option>
-//             </select>
-//             {genreErreur && <span className="text-red-500 text-sm">{genreErreur}</span>}
-//           </div>
-//           <div className="w-full">
-//             <input
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               type="email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               placeholder="Email"
-//             />
-//             {emailErreur && <span className="text-red-500 text-sm">{emailErreur}</span>}
-//           </div>
-//         </div>
-
-//         {/* Téléphone + Rôle */}
-//         <div className="flex gap-1 w-full">
-//           <div className="w-full">
-//             <input
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               type="text"
-//               value={telephone}
-//               onChange={(e) => setTelephone(e.target.value)}
-//               placeholder="Téléphone"
-//             />
-//             {telephoneErreur && <span className="text-red-500 text-sm">{telephoneErreur}</span>}
-//           </div>
-//           <div className="w-full">
-//             <select
-//               onChange={(e) => setRole(e.target.value)}
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               value={role}
-//             >
-//               <option value="">------Choisissez un rôle---</option>
-//               <option value="visiteur">Visiteur</option>
-//               <option value="admin">Admin</option>
-//               <option value="employe">Employé</option>
-//               <option value="superAdmin">SuperAdmin</option>
-//             </select>
-//             {roleErreur && <span className="text-red-500 text-sm">{roleErreur}</span>}
-//           </div>
-//         </div>
-
-//         {/* motDePasse + Confirmation */}
-//         <div className="flex gap-1 w-full">
-//           <div className="w-full">
-//             <input
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               type="motDePasse"
-//               value={motDePasse}
-//               onChange={(e) => setPasseWord(e.target.value)}
-//               placeholder="Mot de passe"
-//             />
-//           </div>
-//           <div className="w-full">
-//             <input
-//               className="border border-t-gray-300 rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800"
-//               type="motDePasse"
-//               value={confirme}
-//               onChange={(e) => setConfirme(e.target.value)}
-//               placeholder="Confirmer"
-//             />
-//           </div>
-//         </div>
-//         {motDePasseErreur && <span className="text-red-500 text-sm">{motDePasseErreur}</span>}
-
-//         <p className="text-right text-lg text-green-800 mb-2 cursor-pointer">
-//           Mot de passe oublié ?
-//         </p>
-//         <button className="bg-blue-950 text-white text-2xl py-2 rounded mb-2 w-full hover:bg-blue-700">
-//           Connexion
-//         </button>
-//         <button className="bg-blue-950 text-white text-2xl py-2 rounded mb-2 w-full hover:bg-blue-700">
-//           Continuer avec Google
-//         </button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default SignUpForm;
 
 import axios from "axios";
+import { Lock, Mail, UserCircleIcon, Eye, EyeOff, User } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const SignUpForm = ({ setIsLogin}: { setIsLogin: (val: boolean) => void }) => {
+const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
   const navigate = useNavigate();
 
-  const [nomComplet, setnomComlet] = useState<string>("");
+  const [nomComplet, setNomComplet] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [motDePasse, setPasseWord] = useState<string>("");
+  const [motDePasse, setMotDepasse] = useState<string>("");
+  const [showPassword, setShowPassword] = useState(false);
   const [confirme, setConfirme] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // erreurs → uniquement booléens (true = bordure rouge)
-  const [nomCompletErreur, setNomComletErreur] = useState<boolean>(false);
-  const [emailErreur, setEmailErreur] = useState<boolean>(false);
-  const [motDePasseErreur, setmotDePasseErreur] = useState<boolean>(false);
+  // Messages d'erreurs
+  const [nomCompletErreur, setNomCompletErreur] = useState<string>("");
+  const [emailErreur, setEmailErreur] = useState<string>("");
+  const [motDePasseErreur, setMotDePasseErreur] = useState<string>("");
+  const [confirmeErreur, setConfirmeErreur] = useState<string>("");
+  const [erreurGenerale, setErreurGenerale] = useState<string>("");
+
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
 
   const handleResister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     // reset erreurs
-    setNomComletErreur(false);
-    setEmailErreur(false);
-    setmotDePasseErreur(false);
+    setNomCompletErreur("");
+    setEmailErreur("");
+    setMotDePasseErreur("");
+    setConfirmeErreur("");
+    setErreurGenerale("");
 
     let hasError = false;
+    
     if (!nomComplet) {
-      setNomComletErreur(true);
+      setNomCompletErreur("Le nom complet est requis.");
       hasError = true;
     }
+    
     if (!email) {
-      setEmailErreur(true);
+      setEmailErreur("L'email est requis.");
+      hasError = true;
+    } else if (!validateEmail(email)) {
+      setEmailErreur("Veuillez entrer un email valide.");
       hasError = true;
     }
-    if (!motDePasse || motDePasse !== confirme) {
-      setmotDePasseErreur(true);
+    
+    if (!motDePasse) {
+      setMotDePasseErreur("Le mot de passe est requis.");
+      hasError = true;
+    } else if (motDePasse.length < 6) {
+      setMotDePasseErreur("Le mot de passe doit contenir au moins 6 caractères.");
+      hasError = true;
+    }
+    
+    if (!confirme) {
+      setConfirmeErreur("Veuillez confirmer votre mot de passe.");
+      hasError = true;
+    } else if (motDePasse !== confirme) {
+      setConfirmeErreur("Les mots de passe ne correspondent pas.");
       hasError = true;
     }
 
-    if (hasError) return;
+    if (hasError) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const res = await axios.post(
@@ -260,96 +81,204 @@ const SignUpForm = ({ setIsLogin}: { setIsLogin: (val: boolean) => void }) => {
         { withCredentials: true }
       );
       console.log("Inscription réussie :", res.data);
-      // ✅ vider les champs après enregistrement
-      setnomComlet("");
-      setEmail("");
-      setPasseWord("");
-      setConfirme("");
-      // navigate("/profil");
-      // ✅ rediriger vers login (même page)
-      setIsLogin(true);
+
+      // Afficher le message de succès élégant
+      setShowSuccess(true);
+      
+      // Masquer le message après 3 secondes
+      setTimeout(() => {
+        setShowSuccess(false);
+        
+        // Vider les champs après enregistrement
+        setNomComplet("");
+        setEmail("");
+        setMotDepasse("");
+        setConfirme("");
+
+        // Rediriger vers login
+        setIsLogin(true);
+      }, 3000);
+      
     } catch (error: any) {
       console.log("Erreur d'inscription :", error.response?.data || error.message);
+      
+      // Gestion des erreurs spécifiques
+      if (error.response?.status === 409) {
+        setErreurGenerale("Cet email est déjà utilisé.");
+      } else {
+        setErreurGenerale("Erreur lors de l'inscription. Veuillez réessayer.");
+      }
+      
+      // setIsLoading(false);
     }
   };
 
-  // fonction utilitaire → bordure rouge si erreur
-  const inputClass = (erreur: boolean) =>
-    `border rounded px-4 py-2 mb-1 w-full focus:outline-none focus:ring-2 focus:ring-green-800 ${
-      erreur ? "border-red-500" : "border-gray-300"
-    }`;
-
   return (
-    <div className="flex w-full flex-col">
-  <form
-    className="justify-center items-center text-center"
-    id="SignUpForm"
-    onSubmit={handleResister}
-  >
-    <h1 className="text-blue-950 text-3xl font-bold border-green-800 
-    border-b-4 mb-6">S'inscrire</h1>
-
-    {/* Champ nomComplet */}
-    <input
-      className={`border border-t-gray-300 rounded px-4 py-2 mb-5 w-full
-      focus:outline-none focus:ring-2 focus:ring-green-800 ${inputClass(nomCompletErreur)}`}
-      type="text"
-      value={nomComplet}
-      onChange={(e) => setnomComlet(e.target.value)}
-      placeholder="Nom et Prénom"
-    /><br />
-    <span className="text-red-500 text-sm mb-2">{nomCompletErreur}</span> <br />
-    {/* Champ Email */}
-    <input
-      className={`border border-t-gray-300 rounded px-4 py-2 mb-5 w-full
-      focus:outline-none focus:ring-2 focus:ring-green-800 ${inputClass(emailErreur)}`}
-      type="email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      placeholder="Email"
-    /><br />
-    <span className="text-red-500 text-sm mb-2">{emailErreur}</span> <br />
-
-    {/* Champ Mot de passe */}
-    <input
-      className={`border border-t-gray-300 rounded px-4 py-2 mb-5 w-full
-      focus:outline-none focus:ring-2 focus:ring-green-800 ${inputClass(motDePasseErreur)}`}
-      type="text"
-      value={motDePasse}
-      onChange={(e) => setPasseWord(e.target.value)}
-      placeholder="Mot de passe"
-    /><br />
-    <span className="text-red-500 text-sm mb-2">{motDePasseErreur}</span> <br />
-
-    {/* Champ Confirmation */}
-    <input
-      className={`border border-t-gray-300 rounded px-4 py-2 mb-5 w-full
-      focus:outline-none focus:ring-2 focus:ring-green-800 ${inputClass(motDePasseErreur)}`}
-      type="text"
-      value={confirme}
-      onChange={(e) => setConfirme(e.target.value)}
-      placeholder="Confirmer le mot de passe"
-    /><br />
-    <span className="text-red-500 text-sm mb-2">{motDePasseErreur}</span> <br />
-
-    {/* Bouton Connexion */}
-    <button
-      type="submit"
-      className="bg-blue-950 text-white text-2xl py-2 rounded mb-4 w-full hover:bg-blue-700"
-    >
-      Inscription
-    </button><br />
-
-    {/* Bouton Google */}
-    <button
-      type="button"
-      className="bg-blue-950 text-white text-2xl py-2 rounded mb-4 w-full hover:bg-blue-700"
-    >
-      Continuer avec Google
-    </button><br />
-  </form>
-</div>
-
+    <div className="w-[60vh] relative">
+      {/* Message de succès élégant */}
+      {showSuccess && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-4/5 animate-fade-in">
+          <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg shadow-lg flex items-center justify-center">
+            <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span className="font-medium">Inscription réussie! Veiller patiente...</span>
+          </div>
+        </div>
+      )}
+      
+      <div className="bg-white py-16 shadow-xl p-8 rounded-tl-[18vh]">
+        <div className="text-center mb-6">
+          <div className="flex justify-center items-center">
+            <UserCircleIcon className="text-green-600" size={42} />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">S'inscrire</h1>
+          <p className="text-gray-600">Créer votre espace personnel</p>
+        </div>
+        
+        <form className="space-y-4" id="SignUpForm" onSubmit={handleResister}>
+          {erreurGenerale && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {erreurGenerale}
+            </div>
+          )}
+          
+          {/* Champ nomComplet */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <User className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={nomComplet}
+              onChange={(e) => setNomComplet(e.target.value)}
+              placeholder="Nom et Prénom"
+              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 
+              focus:ring-green-600 focus:border-green-600 transition-all duration-200 ${
+                nomCompletErreur ? "border-red-500" : "border-gray-200"
+              }`}
+            />
+            {nomCompletErreur && <p className="text-red-500 text-xs mt-1">{nomCompletErreur}</p>}
+          </div>
+          
+          {/* Champ Email */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Mail className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Adresse email"
+              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 
+              focus:ring-green-600 focus:border-green-600 transition-all duration-200 ${
+                emailErreur ? "border-red-500" : "border-gray-200"
+              }`}
+            />
+            {emailErreur && <p className="text-red-500 text-xs mt-1">{emailErreur}</p>}
+          </div>
+          
+          {/* Mot de passe */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={motDePasse}
+              onChange={(e) => setMotDepasse(e.target.value)}
+              placeholder="Mot de passe"
+              className={`w-full pl-10 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 transition-all duration-200 ${
+                motDePasseErreur ? "border-red-500" : "border-gray-200"
+              }`}
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-400" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-400" />
+              )}
+            </button>
+            {motDePasseErreur && <p className="text-red-500 text-xs mt-1">{motDePasseErreur}</p>}
+          </div>
+          
+          {/* Champ Confirmation */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={confirme}
+              onChange={(e) => setConfirme(e.target.value)}
+              placeholder="Confirmer le mot de passe"
+              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 transition-all duration-200 ${
+                confirmeErreur ? "border-red-500" : "border-gray-200"
+              }`}
+            />
+            {confirmeErreur && <p className="text-red-500 text-xs mt-1">{confirmeErreur}</p>}
+          </div>
+          
+          {/* Bouton Inscription */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-blue-950 to-green-800 text-white py-2 rounded-lg font-semibold hover:from-blue-900 
+            hover:to-green-900 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 mt-2"
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Inscription...
+              </span>
+            ) : "Inscription"}
+          </button>
+          
+          {/* Séparateur */}
+          <div className="relative flex items-center mt-4">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="flex-shrink mx-4 text-gray-600 text-sm">Ou</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+          
+          {/* Bouton Google */}
+          <button
+            type="button"
+            disabled={isLoading}
+            className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-semibold 
+            hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 flex items-center justify-center"
+          >
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" width="24" height="24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continuer avec Google
+          </button>
+        </form>
+        
+        <div className="text-center mt-4">
+          <p className="text-gray-600 text-sm">
+            Vous avez déjà un compte?{" "}
+            <button 
+              onClick={() => setIsLogin(true)} 
+              className="text-green-600 hover:text-green-800 font-medium"
+            >
+              Se connecter
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

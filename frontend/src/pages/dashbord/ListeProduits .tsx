@@ -146,20 +146,6 @@ const ListeProduits = () => {
     setFilteredProduits(results);
   }, [searchTerm, filterStock, produits]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) return;
-    
-    try {
-      await axios.delete(
-        `http://localhost:4999/api/allroute/deleteProduit/${id}`
-      );
-      setProduits(produits.filter((p) => p._id !== id));
-    } catch (error) {
-      console.error("Erreur suppression :", error);
-      alert("❌ Impossible de supprimer le produit.");
-    }
-  };
-
   const handleBulkDelete = async () => {
     if (!window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedRows.length} produits ?`)) return;
     
@@ -418,27 +404,11 @@ const ListeProduits = () => {
         <div className="flex gap-2">
           <button
             onClick={() => openModal(row, "afficher")}
-            className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1"
+            className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all duration-200 shadow-sm hover:shadow-md flex items-center"
             title="Voir détails"
           >
             <Eye size={16} />
             <span className="text-xs">Détails</span>
-          </button>
-          <button
-            onClick={() => openModal(row, "modifier")}
-            className="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1"
-            title="Modifier"
-          >
-            <Edit size={16} />
-            <span className="text-xs">Modifier</span>
-          </button>
-          <button
-            onClick={() => handleDelete(row._id)}
-            className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1"
-            title="Supprimer"
-          >
-            <Trash2 size={16} />
-            <span className="text-xs">Supprimer</span>
           </button>
         </div>
       ),
@@ -594,199 +564,6 @@ const ListeProduits = () => {
           </div>
         }
       />
-
-      {/* Modal d'affichage */}
-      <Modal isOpen={modalType === "afficher"} onClose={closeModal} title="Détails du produit" size="lg">
-        {selectedProduit && (
-          <div className="space-y-6">
-            <div className="flex items-start gap-6">
-              {selectedProduit.image ? (
-                <img 
-                  src={`http://localhost:4999${selectedProduit.image}`} 
-                  alt="Produit" 
-                  className="w-40 h-40 object-cover rounded-2xl shadow-md border border-gray-200" 
-                />
-              ) : (
-                <div className="w-40 h-40 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center shadow-md border border-gray-200">
-                  <Package size={40} className="text-blue-600" />
-                </div>
-              )}
-              
-              <div className="flex-1">
-                <h4 className="text-2xl font-bold text-gray-900 mb-2">{selectedProduit.categorieNom}</h4>
-                <p className="text-gray-600 mb-4">{selectedProduit.categorieDescription}</p>
-                
-                <div className="flex items-center gap-2">
-                  <StatusBadge quantity={selectedProduit.quantite} minStock={selectedProduit.stock_min} />
-                  <span className="text-sm text-gray-500">
-                    {selectedProduit.quantite} / {selectedProduit.stock_min} unités
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100">
-              <div className="space-y-4">
-                <h5 className="font-semibold text-gray-700 flex items-center gap-2">
-                  <Package size={18} className="text-blue-500" />
-                  Informations de stock
-                </h5>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Quantité:</span>
-                  <span className="font-medium">{selectedProduit.quantite} unités</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Stock minimum:</span>
-                  <span className="font-medium">{selectedProduit.stock_min} unités</span>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <h5 className="font-semibold text-gray-700 flex items-center gap-2">
-                  <DollarSign size={18} className="text-green-500" />
-                  Informations de prix
-                </h5>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Prix d'achat:</span>
-                  <span className="font-medium">€{selectedProduit.prixAchat}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Prix de vente:</span>
-                  <span className="font-medium">€{selectedProduit.prixVente}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Marge:</span>
-                  <span className="font-medium text-green-600">
-                    €{(selectedProduit.prixVente - selectedProduit.prixAchat).toFixed(2)}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <h5 className="font-semibold text-gray-700 flex items-center gap-2">
-                  <Calendar size={18} className="text-blue-500" />
-                  Dates importantes
-                </h5>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Date d'ajout:</span>
-                  <span className="font-medium">{new Date(selectedProduit.date_ajout).toLocaleDateString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Date d'expiration:</span>
-                  <span className={`font-medium ${
-                    new Date(selectedProduit.date_expiration) < new Date() ? 'text-red-600' : 'text-gray-900'
-                  }`}>
-                    {new Date(selectedProduit.date_expiration).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
-
-      {/* Modal de modification */}
-      <Modal isOpen={modalType === "modifier"} onClose={closeModal} title="Modifier le produit" size="md">
-        {selectedProduit && (
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quantité</label>
-                <input
-                  type="number"
-                  name="quantite"
-                  value={editData.quantite}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  min="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Prix d'achat (€)</label>
-                <input
-                  type="number"
-                  name="prixAchat"
-                  step="0.01"
-                  value={editData.prixAchat}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  min="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Prix de vente (€)</label>
-                <input
-                  type="number"
-                  name="prixVente"
-                  step="0.01"
-                  value={editData.prixVente}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  min="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Stock minimum</label>
-                <input
-                  type="number"
-                  name="stock_min"
-                  value={editData.stock_min}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  min="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date d'ajout</label>
-                <input
-                  type="date"
-                  name="date_ajout"
-                  value={editData.date_ajout}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date d'expiration</label>
-                <input
-                  type="date"
-                  name="date_expiration"
-                  value={editData.date_expiration}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-              <button
-                type="button"
-                onClick={closeModal}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                Enregistrer les modifications
-              </button>
-            </div>
-          </form>
-        )}
-      </Modal>
     </div>
   );
 };
