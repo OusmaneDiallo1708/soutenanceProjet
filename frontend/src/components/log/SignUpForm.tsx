@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { Lock, Mail, UserCircleIcon, Eye, EyeOff, User } from "lucide-react";
 import React, { useState } from "react";
@@ -9,7 +8,7 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
 
   const [nomComplet, setNomComplet] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [motDePasse, setMotDepasse] = useState<string>("");
+  const [motDePasse, setMotDePasse] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [confirme, setConfirme] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -75,54 +74,49 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
     }
 
     try {
+      // ⭐ CORRECTION : Utiliser l'URL complète au lieu de la variable d'environnement
       const res = await axios.post(
-        `${import.meta.env.VITE_APP_URL}/api/utilisateur/ajoutUtilisateur`,
+        "http://localhost:4999/api/utilisateur/ajoutUtilisateur",
         { nomComplet, email, motDePasse },
         { withCredentials: true }
       );
       console.log("Inscription réussie :", res.data);
 
-      // Afficher le message de succès élégant
       setShowSuccess(true);
       
-      // Masquer le message après 3 secondes
       setTimeout(() => {
         setShowSuccess(false);
-        
-        // Vider les champs après enregistrement
         setNomComplet("");
         setEmail("");
-        setMotDepasse("");
+        setMotDePasse("");
         setConfirme("");
-
-        // Rediriger vers login
         setIsLogin(true);
       }, 3000);
       
     } catch (error: any) {
       console.log("Erreur d'inscription :", error.response?.data || error.message);
       
-      // Gestion des erreurs spécifiques
       if (error.response?.status === 409) {
         setErreurGenerale("Cet email est déjà utilisé.");
+      } else if (error.code === 'ERR_CONNECTION_REFUSED') {
+        setErreurGenerale("Impossible de contacter le serveur. Vérifiez que le backend est démarré.");
       } else {
         setErreurGenerale("Erreur lors de l'inscription. Veuillez réessayer.");
       }
       
-      // setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="w-[60vh] relative">
-      {/* Message de succès élégant */}
       {showSuccess && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-4/5 animate-fade-in">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-4/5">
           <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg shadow-lg flex items-center justify-center">
             <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
-            <span className="font-medium">Inscription réussie! Veiller patiente...</span>
+            <span className="font-medium">Inscription réussie! Veuillez patienter...</span>
           </div>
         </div>
       )}
@@ -143,7 +137,6 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
             </div>
           )}
           
-          {/* Champ nomComplet */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <User className="h-5 w-5 text-gray-400" />
@@ -161,7 +154,6 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
             {nomCompletErreur && <p className="text-red-500 text-xs mt-1">{nomCompletErreur}</p>}
           </div>
           
-          {/* Champ Email */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Mail className="h-5 w-5 text-gray-400" />
@@ -179,7 +171,6 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
             {emailErreur && <p className="text-red-500 text-xs mt-1">{emailErreur}</p>}
           </div>
           
-          {/* Mot de passe */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock className="h-5 w-5 text-gray-400" />
@@ -187,7 +178,7 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
             <input
               type={showPassword ? "text" : "password"}
               value={motDePasse}
-              onChange={(e) => setMotDepasse(e.target.value)}
+              onChange={(e) => setMotDePasse(e.target.value)}
               placeholder="Mot de passe"
               className={`w-full pl-10 pr-12 py-2 border rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 transition-all duration-200 ${
                 motDePasseErreur ? "border-red-500" : "border-gray-200"
@@ -207,7 +198,6 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
             {motDePasseErreur && <p className="text-red-500 text-xs mt-1">{motDePasseErreur}</p>}
           </div>
           
-          {/* Champ Confirmation */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock className="h-5 w-5 text-gray-400" />
@@ -224,7 +214,6 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
             {confirmeErreur && <p className="text-red-500 text-xs mt-1">{confirmeErreur}</p>}
           </div>
           
-          {/* Bouton Inscription */}
           <button
             type="submit"
             disabled={isLoading}
@@ -242,14 +231,12 @@ const SignUpForm = ({ setIsLogin }: { setIsLogin: (val: boolean) => void }) => {
             ) : "Inscription"}
           </button>
           
-          {/* Séparateur */}
           <div className="relative flex items-center mt-4">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="flex-shrink mx-4 text-gray-600 text-sm">Ou</span>
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
           
-          {/* Bouton Google */}
           <button
             type="button"
             disabled={isLoading}

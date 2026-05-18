@@ -57,71 +57,88 @@
 const jwt = require('jsonwebtoken');
 const utilisateurModel = require('../models/utilisateurModel');
 
-const maxAge = 3 * 24 * 60 * 60; // 3 jours en secondes
+const maxAge = 3 * 24 * 60 * 60;
 
-// Génération du token JWT
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.TOKEN_SECRET, { expiresIn: maxAge });
 };
 
-// Connexion utilisateur
+// ==================== CONNEXION ====================
 module.exports.Connexion = async (req, res) => {
-  const { email, motDepasse } = req.body;
+  console.log("📥 BODY reçu:", req.body);
+  
+  const { email, motDePasse } = req.body;
 
   try {
-    if (!email || !motDepasse) {
+    if (!email || !motDePasse) {
+      console.log("❌ Champs manquants");
       return res.status(400).json({ message: 'Tous les champs sont requis' });
     }
 
-    // Vérifie l'utilisateur dans la base
-    const utilisateur = await utilisateurModel.login(email, motDepasse);
+    console.log("🔍 Recherche de l'utilisateur:", email);
+    const utilisateur = await utilisateurModel.login(email, motDePasse);
+    
     if (!utilisateur) {
+      console.log("❌ Utilisateur non trouvé ou mot de passe incorrect");
       return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
     }
 
-    // Création du token
+    console.log("✅ Utilisateur trouvé:", utilisateur.email);
     const token = createToken(utilisateur._id);
+    console.log("✅ Token généré");
 
-    // ⚡️ Envoi du cookie httpOnly sécurisé
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // pour dev local
-      maxAge: maxAge * 1000, // en millisecondes
+      sameSite: 'lax',
+      maxAge: maxAge * 1000,
     });
 
-    // ⚡️ Renvoie du token dans le JSON pour React
+    // Réponse complète pour le frontend
     res.status(200).json({
+      success: true,
       message: 'Connexion réussie',
-      token, // frontend peut le stocker
+      token: token,
       utilisateur: {
-        id: utilisateur._id,
-        pseudo: utilisateur.pseudo,
-        email: utilisateur.email
+        _id: utilisateur._id,
+        nomComplet: utilisateur.nomComplet,
+        email: utilisateur.email,
+        role: utilisateur.role,
+        photo: utilisateur.photo || null
       }
     });
 
   } catch (error) {
-    console.error("Erreur connexion :", error);
-    res.status(500).json({ message: 'Erreur de connexion', error: error.message });
+    console.error("❌ Erreur complète:", error);
+    res.status(500).json({ 
+      message: 'Erreur de connexion', 
+      error: error.message 
+    });
   }
 };
 
-// Récupérer les infos utilisateur depuis le middleware checkUser
+// ==================== RÉCUPÉRER LES INFOS ====================
 module.exports.GetInfo = (req, res) => {
-  if (res.locals.user) {
+  console.log("🔍 GetInfo - req.user:", req.user);
+  console.log("🔍 GetInfo - res.locals.user:", res.locals.user);
+  
+  const user = req.user || res.locals.user;
+  
+  if (user) {
     res.json({
-      pseudo: res.locals.user.pseudo,
-      email: res.locals.user.email,
-      photo: res.locals.user.photo || null
+      _id: user._id,
+      nomComplet: user.nomComplet,
+      email: user.email,
+      photo: user.photo || null,
+      role: user.role
     });
   } else {
     res.status(401).json({ message: "Utilisateur non connecté" });
   }
 };
 
-// Déconnexion
+// ==================== DÉCONNEXION ====================
 module.exports.Logout = (req, res) => {
-  res.cookie('jwt', '', { maxAge: 1 }); // supprime le cookie
+  res.cookie('jwt', '', { maxAge: 1 });
   res.status(200).json({ message: 'Déconnexion réussie' });
 };

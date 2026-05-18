@@ -274,8 +274,8 @@
 // //       name: "Prix",
 // //       selector: (row) => (
 // //         <div className="flex flex-col">
-// //           <span className="text-gray-900 font-medium">€{row.prixVente}</span>
-// //           <span className="text-xs text-gray-500">Achat: €{row.prixAchat}</span>
+// //           <span className="text-gray-900 font-medium">GNF{row.prixVente}</span>
+// //           <span className="text-xs text-gray-500">Achat: GNF{row.prixAchat}</span>
 // //         </div>
 // //       ),
 // //       sortable: true,
@@ -474,11 +474,11 @@
 // //                 <h5 className="font-semibold text-gray-700">Informations de prix</h5>
 // //                 <div className="flex justify-between">
 // //                   <span className="text-gray-600">Prix d'achat:</span>
-// //                   <span className="font-medium">€{selectedProduit.prixAchat}</span>
+// //                   <span className="font-medium">GNF{selectedProduit.prixAchat}</span>
 // //                 </div>
 // //                 <div className="flex justify-between">
 // //                   <span className="text-gray-600">Prix de vente:</span>
-// //                   <span className="font-medium">€{selectedProduit.prixVente}</span>
+// //                   <span className="font-medium">GNF{selectedProduit.prixVente}</span>
 // //                 </div>
 // //               </div>
               
@@ -520,7 +520,7 @@
 // //               </div>
               
 // //               <div>
-// //                 <label className="block text-sm font-medium text-gray-700 mb-1">Prix d'achat (€)</label>
+// //                 <label className="block text-sm font-medium text-gray-700 mb-1">Prix d'achat (GNF)</label>
 // //                 <input
 // //                   type="number"
 // //                   name="prixAchat"
@@ -533,7 +533,7 @@
 // //               </div>
               
 // //               <div>
-// //                 <label className="block text-sm font-medium text-gray-700 mb-1">Prix de vente (€)</label>
+// //                 <label className="block text-sm font-medium text-gray-700 mb-1">Prix de vente (GNF)</label>
 // //                 <input
 // //                   type="number"
 // //                   name="prixVente"
@@ -797,7 +797,7 @@
 //       selector: row => (
 //         <div className="flex flex-col">
 //           <span className="text-gray-900 font-bold flex items-center gap-1"><DollarSign size={14} className="text-green-600" />{row.prixVente}</span>
-//           <span className="text-xs text-gray-500">Achat: €{row.prixAchat}</span>
+//           <span className="text-xs text-gray-500">Achat: GNF{row.prixAchat}</span>
 //         </div>
 //       ),
 //       sortable: true, width: "120px"
@@ -1349,7 +1349,7 @@ const ListeProduits = () => {
             <DollarSign size={14} className="text-green-600" />
             {row.prixVente}
           </span>
-          <span className="text-xs text-gray-500">Achat: €{row.prixAchat}</span>
+          <span className="text-xs text-gray-500">Achat:{row.prixAchat}GNF</span>
         </div>
       ),
       sortable: true,
@@ -1625,16 +1625,16 @@ const ListeProduits = () => {
                 </h5>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Prix d'achat:</span>
-                  <span className="font-medium">€{selectedProduit.prixAchat}</span>
+                  <span className="font-medium">GNF{selectedProduit.prixAchat}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Prix de vente:</span>
-                  <span className="font-medium">€{selectedProduit.prixVente}</span>
+                  <span className="font-medium">GNF{selectedProduit.prixVente}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Marge:</span>
                   <span className="font-medium text-green-600">
-                    €{(selectedProduit.prixVente - selectedProduit.prixAchat).toFixed(2)}
+                    GNF{(selectedProduit.prixVente - selectedProduit.prixAchat).toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -1681,7 +1681,7 @@ const ListeProduits = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Prix d'achat (€)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Prix d'achat (GNF)</label>
                 <input
                   type="number"
                   name="prixAchat"
@@ -1695,7 +1695,7 @@ const ListeProduits = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Prix de vente (€)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Prix de vente (GNF)</label>
                 <input
                   type="number"
                   name="prixVente"
